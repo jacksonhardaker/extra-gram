@@ -26,11 +26,26 @@ chrome.runtime.onMessage.addListener(function (message) {
 
     chrome.notifications.create({
       title: 'Extra-gram',
-      message: successful ? message.success: message.fail,
+      message: successful ? message.success : message.fail,
       iconUrl: 'icons/icon16.png',
       type: 'basic'
     });
 
     input.remove();
+  }
+});
+
+chrome.runtime.onMessage.addListener(function (message) {
+  if (message && message.type == 'opentab') {
+
+    var html = ['<html><head><title>Non-Followback Users</title></head><body><ul>'];
+
+    message.users.forEach(function (user) {
+      html.push(['<li><a href="', 'https://www.instagram.com/', user, '" target="_blank">', user, '</a></li>'].join(''));
+    });
+
+    html.push('</ul></body></html>');
+    var w = window.open('', '_blank');
+    w.document.write(html.join(''));
   }
 });
