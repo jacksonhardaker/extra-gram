@@ -12,9 +12,9 @@ chrome.extension.onMessage.addListener(
     sendResponse();
   });
 
-  /**
-   * Copies the given text to the clipboard
-   */
+/**
+ * Copies the given text to the clipboard
+ */
 chrome.runtime.onMessage.addListener(function (message) {
   if (message && message.type == 'copy') {
     var input = document.createElement('textarea');
@@ -23,7 +23,14 @@ chrome.runtime.onMessage.addListener(function (message) {
     input.focus();
     input.select();
     var successful = document.execCommand('Copy');
-    alert('Copying text command was ' + (successful ? 'successful' : 'unsuccessful'));
+
+    chrome.notifications.create({
+      title: 'Extra-gram',
+      message: successful ? message.success: message.fail,
+      iconUrl: 'icons/icon16.png',
+      type: 'basic'
+    });
+
     input.remove();
   }
 });
