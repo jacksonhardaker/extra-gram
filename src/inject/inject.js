@@ -55,6 +55,11 @@ chrome.extension.sendMessage({}, function (response) {
 								success: 'Your list of non-followback users has been copied to the clipboard',
 								fail: 'Unable to copy your list of non-followback users to the clipboard'
 							});
+
+							chrome.runtime.sendMessage({
+								type: 'opentab',
+								users: nonFollowBackUsers
+							});
 						});
 					});
 
