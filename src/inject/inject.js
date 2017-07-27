@@ -4,7 +4,18 @@ chrome.extension.sendMessage({}, function (response) {
 			clearInterval(readyStateCheckInterval);
 
 			(function () {
-				const MODAL_INDEX = { followers: 1, following: 2 };
+				const MODAL_INDEX = {
+					followers: 1,
+					following: 2
+				};
+				const INSTAGRAM_CLASS_NAMES = {
+					userListItem : '_cx1ua',
+					userName: '_gzjax',
+					metaItems: '_bkw5z',
+					closeButton: '_3eajp',
+					commentTextArea: '_2hc0g',
+					upvoteButton: '_tk4ba'
+				};
 				var followersList = null;
 				var followingList = null;
 
@@ -16,10 +27,16 @@ chrome.extension.sendMessage({}, function (response) {
 
 					switch (event.keyCode) {
 						case 38: // Up arrow
-							document.getElementsByClassName('_tk4ba')[0].click();
+							var button = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.upvoteButton)[0];
+							if (button) {
+								button.click();
+							}
 							break;
 						case 40: // Down arrow
-							document.getElementsByClassName('_2hc0g')[0].focus();
+							var textarea = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.commentTextArea)[0];
+							if (textarea) {
+								textarea.focus();
+							}
 							break;
 						case 220: // Backslash
 							getFollowers();
@@ -30,7 +47,7 @@ chrome.extension.sendMessage({}, function (response) {
 				}, true);
 
 				function closeFollowerFollowingModal() {
-					document.getElementsByClassName('_3eajp')[0].click();
+					document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.closeButton)[0].click();
 				}
 
 				function getFollowingThatAreNotFollowers() {
@@ -67,80 +84,87 @@ chrome.extension.sendMessage({}, function (response) {
 				}
 
 				function getFollowing(resolve) {
-					if (!followingList) {
-						var followingCount = document.getElementsByClassName('_bkw5z')[MODAL_INDEX.following].innerText;
-						document.getElementsByClassName('_bkw5z')[MODAL_INDEX.following].click();
+					var followingItem = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.metaItems)[MODAL_INDEX.following];
+					if (followingItem) {
+						if (!followingList) {
+							var followingCount = followingItem.innerText;
+							followingItem.click();
 
-						window.setTimeout(function () {
+							window.setTimeout(function () {
 
-							var working = new Promise((resolve, reject) => {
-								loadList(resolve, followingCount);
-							}).then((listItems) => {
-								followingList = listNames(listItems);
+								var working = new Promise((resolve, reject) => {
+									loadList(resolve, followingCount);
+								}).then((listItems) => {
+									followingList = listNames(listItems);
 
-								if (resolve) {
-									resolve(followingList);
-								}
+									if (resolve) {
+										resolve(followingList);
+									}
 
-								closeFollowerFollowingModal();
-							});
+									closeFollowerFollowingModal();
+								});
 
-						}, 500);
-					}
-					else {
-						if (resolve) {
-							resolve(followingList);
+							}, 500);
+						}
+						else {
+							if (resolve) {
+								resolve(followingList);
+							}
 						}
 					}
 				}
 
 				function getFollowers(resolve) {
-					if (!followersList) {
-						var followerCount = document.getElementsByClassName('_bkw5z')[MODAL_INDEX.followers].innerText;
-						document.getElementsByClassName('_bkw5z')[MODAL_INDEX.followers].click();
+					var followersItem = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.metaItems)[MODAL_INDEX.followers];
 
-						window.setTimeout(function () {
+					if (followersItem) {
+						if (!followersList) {
+							var followerCount = followersItem.innerText;
+							followersItem.click();
 
-							var working = new Promise((resolve, reject) => {
-								loadList(resolve, followerCount);
-							}).then((listItems) => {
-								followersList = listNames(listItems);
+							window.setTimeout(function () {
 
-								// If given a resolution func, resolve, if not, copy to clipboard
-								if (resolve) {
-									resolve(followersList);
-								}
-								else {
-									chrome.runtime.sendMessage({
-										type: 'copy',
-										text: followersList.join('\n'),
-										success: 'Your list of followers has been copied to the clipboard',
-										fail: 'Unable to copy your list of followers to the clipboard'
-									});
-								}
+								var working = new Promise((resolve, reject) => {
+									loadList(resolve, followerCount);
+								}).then((listItems) => {
+									followersList = listNames(listItems);
 
-								closeFollowerFollowingModal();
-							});
+									// If given a resolution func, resolve, if not, copy to clipboard
+									if (resolve) {
+										resolve(followersList);
+									}
+									else {
+										chrome.runtime.sendMessage({
+											type: 'copy',
+											text: followersList.join('\n'),
+											success: 'Your list of followers has been copied to the clipboard',
+											fail: 'Unable to copy your list of followers to the clipboard'
+										});
+									}
 
-						}, 500);
-					}
-					else {
-						// If given a resolution func, resolve, if not, copy to clipboard
-						if (resolve) {
-							resolve(followersList);
+									closeFollowerFollowingModal();
+								});
+
+							}, 500);
 						}
 						else {
-							chrome.runtime.sendMessage({
-								type: 'copy',
-								text: followersList.join('\n')
-							});
+							// If given a resolution func, resolve, if not, copy to clipboard
+							if (resolve) {
+								resolve(followersList);
+							}
+							else {
+								chrome.runtime.sendMessage({
+									type: 'copy',
+									text: followersList.join('\n')
+								});
+							}
 						}
 					}
 				}
 
 				function listNames(listItems) {
 					var names = [];
-					var containers = document.getElementsByClassName('_gzjax');
+					var containers = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.userName);
 					for (var i = 0; i < containers.length; i++) {
 						names.push(containers[i].children[0].innerText);
 					}
@@ -149,7 +173,7 @@ chrome.extension.sendMessage({}, function (response) {
 				}
 
 				function loadList(resolve, count) {
-					var listItems = document.getElementsByClassName('_cx1ua');
+					var listItems = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.userListItem);
 
 					if (listItems.length < count) {
 						listItems[listItems.length - 1].scrollIntoView();
