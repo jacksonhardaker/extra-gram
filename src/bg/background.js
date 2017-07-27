@@ -35,6 +35,9 @@ chrome.runtime.onMessage.addListener(function (message) {
   }
 });
 
+/**
+ * Opens a given list of instagram users in a new tab with links.
+ */
 chrome.runtime.onMessage.addListener(function (message) {
   if (message && message.type == 'opentab') {
 
