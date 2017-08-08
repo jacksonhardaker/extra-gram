@@ -11,7 +11,7 @@ chrome.extension.sendMessage({}, function (response) {
 				const INSTAGRAM_CLASS_NAMES = {
 					userListItem : '_6e4x5', // li element inside modal
 					userName: '_2g7d5', // link element inside modal
-					_t98z6: '_bkw5z', // link element
+					metaItems: '_t98z6', // link element
 					closeButton: '_dcj9f', // link element
 					commentTextArea: '_bilrf', // Textarea element
 					upvoteButton: '_eszkz' // link element
