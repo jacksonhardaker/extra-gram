@@ -4,6 +4,7 @@ chrome.extension.sendMessage({}, function (response) {
 			clearInterval(readyStateCheckInterval);
 
 			(function () {
+				
 				const MODAL_INDEX = {
 					followers: 1,
 					following: 2
@@ -87,13 +88,13 @@ chrome.extension.sendMessage({}, function (response) {
 					var followingItem = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.metaItems)[MODAL_INDEX.following];
 					if (followingItem) {
 						if (!followingList) {
-							var followingCount = followingItem.innerText;
+							var followingCount = followingItem.children[0].innerText;
 							followingItem.click();
 
 							window.setTimeout(function () {
 
 								var working = new Promise((resolve, reject) => {
-									loadList(resolve, followingCount);
+									loadList(resolve, followingCount, 0, 0);
 								}).then((listItems) => {
 									followingList = listNames(listItems);
 
@@ -119,13 +120,13 @@ chrome.extension.sendMessage({}, function (response) {
 
 					if (followersItem) {
 						if (!followersList) {
-							var followerCount = followersItem.innerText;
+							var followerCount = followersItem.children[0].innerText;
 							followersItem.click();
 
 							window.setTimeout(function () {
 
 								var working = new Promise((resolve, reject) => {
-									loadList(resolve, followerCount);
+									loadList(resolve, followerCount, 0, 0);
 								}).then((listItems) => {
 									followersList = listNames(listItems);
 
@@ -166,18 +167,27 @@ chrome.extension.sendMessage({}, function (response) {
 					var names = [];
 					var containers = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.userName);
 					for (var i = 0; i < containers.length; i++) {
-						names.push(containers[i].children[0].innerText);
+						names.push(containers[i].innerText);
 					}
 
 					return names;
 				}
 
-				function loadList(resolve, count) {
+				function loadList(resolve, count, previouslistItemsLength, attemptCount) {
 					var listItems = document.getElementsByClassName(INSTAGRAM_CLASS_NAMES.userListItem);
+					var listItemsLength = listItems.length;
+					
+					// Increase attempt count?
+					if (previouslistItemsLength === listItems.length) {
+						attemptCount += 1;
+					}
+					else {
+						attemptCount = 0;
+					}
 
-					if (listItems.length < count) {
-						listItems[listItems.length - 1].scrollIntoView();
-						window.setTimeout(function () { loadList(resolve, count); }, 200);
+					if (listItemsLength < count & attemptCount < 20) {
+						listItems[listItemsLength - 1].scrollIntoView();
+						window.setTimeout(function () { loadList(resolve, count, listItemsLength, attemptCount); }, 350);
 					}
 					else {
 						resolve(listItems);
