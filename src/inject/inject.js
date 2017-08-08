@@ -9,12 +9,12 @@ chrome.extension.sendMessage({}, function (response) {
 					following: 2
 				};
 				const INSTAGRAM_CLASS_NAMES = {
-					userListItem : '_cx1ua',
-					userName: '_gzjax',
-					metaItems: '_bkw5z',
-					closeButton: '_3eajp',
-					commentTextArea: '_2hc0g',
-					upvoteButton: '_tk4ba'
+					userListItem : '_6e4x5', // li element inside modal
+					userName: '_2g7d5', // link element inside modal
+					_t98z6: '_bkw5z', // link element
+					closeButton: '_dcj9f', // link element
+					commentTextArea: '_bilrf', // Textarea element
+					upvoteButton: '_eszkz' // link element
 				};
 				var followersList = null;
 				var followingList = null;
